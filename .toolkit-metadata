@@ -1,0 +1,7 @@
+resources:
+- resource: toolkit.conf
+  path: toolkit.conf
+  version: 0.78.0
+  timestamp: 2025-08-19T01:22:53.480237Z
+  size: 1118
+  hash: 2f199a00d1f0475016b6df69c6ba17d4
