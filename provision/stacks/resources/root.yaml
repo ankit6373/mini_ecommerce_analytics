@@ -1,0 +1,41 @@
+databases:
+  - name: "{{ ENV }}_BRONZE"
+  - name: "{{ ENV }}_SILVER"
+  - name: "{{ ENV }}_GOLD"
+  - name: PLATFORM
+
+schemas:
+  - name: RAW
+    database: "{{ ENV }}_BRONZE"
+  - name: STAGING
+    database: "{{ ENV }}_SILVER"
+  - name: COMMON
+    database: "{{ ENV }}_SILVER"
+  - name: SALES
+    database: "{{ ENV }}_SILVER"
+  - name: MARKETING
+    database: "{{ ENV }}_SILVER"
+  - name: FINANCE
+    database: "{{ ENV }}_SILVER"
+  - name: ANALYTICS
+    database: "{{ ENV }}_GOLD"
+  - name: MONITORING
+    database: PLATFORM
+  - name: SANDBOX
+    database: PLATFORM
+
+
+#roles: 
+#  - DEV_PHDATA
+#users:
+#  - name: DEMO_USER
+#  - name: ANALYTICS_USER
+#warehouses:
+#  - name: ANALYTICS_WH
+#roleGrants:
+#  - name: SYSADMIN
+#  - name: SECURITYADMIN
+#    ToRoles: DEV_PHDATA
+
+
+  

@@ -1,0 +1,40 @@
+!set variable_substitution=true;
+
+-- Target context = SILVER/STAGING for the current ENV (DEV/QA/PROD)
+USE DATABASE &{ENV}_SILVER;
+USE SCHEMA STAGING;
+
+CREATE OR REPLACE TABLE ORDER_ITEMS AS
+SELECT
+  ID::NUMBER AS ORDER_ITEM_ID,
+  ORDER_ID::NUMBER AS ORDER_ID,
+  USER_ID::NUMBER AS CUSTOMER_ID,
+  PRODUCT_ID::NUMBER AS PRODUCT_ID,
+  INVENTORY_ITEM::NUMBER AS INVENTORY_ITEM_ID,
+  STATUS::VARCHAR AS STATUS,
+  CREATED_AT::TIMESTAMP_NTZ AS CREATED_AT,
+  SHIPPED_AT::TIMESTAMP_NTZ AS SHIPPED_AT,
+  DELIVERED_AT::TIMESTAMP_NTZ AS DELIVERED_AT,
+  RETURNED_AT::TIMESTAMP_NTZ AS RETURNED_AT,
+  SALES_PRICE::NUMBER(18,2) AS SALES_PRICE
+FROM &{ENV}_BRONZE.RAW.ORDER_ITEMS;
+
+
+-- Add the primary key constraint
+ALTER TABLE ORDER_ITEMS ADD CONSTRAINT PK_ORDER_ITEMS PRIMARY KEY(ORDER_ITEM_ID);
+
+-- Add a desription for the entire table
+ALTER TABLE INVENTORY_ITEMS SET COMMENT = 'This table stores information about the orders including their status, delivery date, shipping date and sales price';
+
+-- Add comments to each column
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN ORDER_ITEM_ID COMMENT 'It stores the unique order item ID';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN ORDER_ID COMMENT 'It stores the unique order ID';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN CUSTOMER_ID COMMENT 'It stores the unique customer ID';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN PRODUCT_ID COMMENT 'It stores the unique product ID';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN INVENTORY_ITEM_ID COMMENT 'It stores the unique inventory item ID';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN STATUS COMMENT 'It stores the status of the order item';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time when the order item was created';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN SHIPPED_AT COMMENT 'It stores the date and time when the order item was shipped';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN DELIVERED_AT COMMENT 'It stores the date and time when the order item was delivered';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN RETURNED_AT COMMENT 'It stores the date and time when the order item was returned';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN SALES_PRICE COMMENT 'It stores the sales price of the order item';

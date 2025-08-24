@@ -1,0 +1,101 @@
+!set variable_substitution=true;
+
+-- Target context = SILVER/MARKETING for the current ENV (DEV/QA/PROD)
+USE DATABASE &{ENV}_SILVER;
+USE SCHEMA MARKETING;
+
+CREATE OR REPLACE TABLE DIM_SESSION (
+  SESSION_ID         STRING PRIMARY KEY COMMENT 'It stores session identofier from events',
+  CUSTOMER_ID        NUMBER COMMENT 'it stores CUSTOMER (BUSINESS KEY)',
+  RAW_TRAFFIC_SOURCE STRING COMMENT 'it stores raw source as seen in the events',
+  CHANNEL_ID         NUMBER COMMENT 'FK TO COMMON.DIM_CHANNEL',
+  BROWSER            STRING COMMENT 'It stores information of the browsr customer is using (picked up from EVENTS)',
+  CITY               STRING COMMENT 'It stores the city of the customer',
+  STATE              STRING COMMENT 'It stores the state of the customer',
+  POSTAL_CODE        STRING COMMENT 'It stores the postal code of the customer',
+  FIRST_EVENT_AT     TIMESTAMP_NTZ COMMENT 'It stores when the session started',
+  LAST_EVENT_AT      TIMESTAMP_NTZ COMMENT 'It stores when the session ended',
+  EVENT_COUNT        NUMBER COMMENT 'It stores total events in the session',
+  LANDING_URI        STRING COMMENT 'It stores first uri in the session',
+  EXIT_URI           STRING COMMENT 'It stores last uri in the session'
+)
+COMMENT='It stores a visit/interaction of a customer with the website/app. It stores information as one row per session.';
+
+INSERT OVERWRITE INTO DIM_SESSION (
+  SESSION_ID, CUSTOMER_ID, RAW_TRAFFIC_SOURCE, CHANNEL_ID, BROWSER,
+  CITY, STATE, POSTAL_CODE,
+  FIRST_EVENT_AT, LAST_EVENT_AT, EVENT_COUNT, LANDING_URI, EXIT_URI
+)
+WITH E AS (
+  SELECT
+    SESSION_ID,
+    CUSTOMER_ID,
+    TRAFFIC_SOURCE,
+    BROWSER,
+    CITY, STATE, POSTAL_CODE,
+    URI,
+    CREATED_AT,
+    SEQUENCE
+  FROM &{ENV}_SILVER.STAGING.EVENTS
+  WHERE SESSION_ID IS NOT NULL
+),
+-- LANDING ROW PER SESSION
+LANDING AS (
+  SELECT *
+  FROM (
+    SELECT E.*,
+           ROW_NUMBER() OVER (PARTITION BY SESSION_ID ORDER BY CREATED_AT, SEQUENCE) AS RN
+    FROM E
+  )
+  WHERE RN = 1
+),
+-- EXIT ROW PER SESSION
+EXITROW AS (
+  SELECT *
+  FROM (
+    SELECT E.*,
+           ROW_NUMBER() OVER (PARTITION BY SESSION_ID ORDER BY CREATED_AT DESC, SEQUENCE DESC) AS RN
+    FROM E
+  )
+  WHERE RN = 1
+),
+-- AGGREGATES PER SESSION
+AGG AS (
+  SELECT
+    SESSION_ID,
+    ANY_VALUE(CUSTOMER_ID)        AS CUSTOMER_ID,          -- consistent within a session
+    ANY_VALUE(TRAFFIC_SOURCE)     AS RAW_TRAFFIC_SOURCE,
+    ANY_VALUE(BROWSER)            AS BROWSER,
+    ANY_VALUE(CITY)               AS CITY,
+    ANY_VALUE(STATE)              AS STATE,
+    ANY_VALUE(POSTAL_CODE)        AS POSTAL_CODE,
+    MIN(CREATED_AT)               AS FIRST_EVENT_AT,
+    MAX(CREATED_AT)               AS LAST_EVENT_AT,
+    COUNT(*)                      AS EVENT_COUNT
+  FROM E
+  GROUP BY SESSION_ID
+),
+-- MAP TRAFFIC SOURCE -> CHANNEL_ID (via DIM_CHANNEL already built)
+CHMAP AS (
+  SELECT
+    C.CHANNEL_ID,
+    C.RAW_SOURCE
+  FROM &{ENV}_SILVER.COMMON.DIM_CHANNEL C
+)
+SELECT
+  A.SESSION_ID,
+  A.CUSTOMER_ID,
+  A.RAW_TRAFFIC_SOURCE,
+  CH.CHANNEL_ID,
+  A.BROWSER,
+  A.CITY, A.STATE, A.POSTAL_CODE,
+  A.FIRST_EVENT_AT, A.LAST_EVENT_AT, A.EVENT_COUNT,
+  L.URI AS LANDING_URI,
+  X.URI AS EXIT_URI
+FROM AGG A
+LEFT JOIN LANDING L  ON L.SESSION_ID = A.SESSION_ID
+LEFT JOIN EXITROW X  ON X.SESSION_ID = A.SESSION_ID
+LEFT JOIN CHMAP CH   ON UPPER(CH.RAW_SOURCE) = UPPER(A.RAW_TRAFFIC_SOURCE);
+
+
+
