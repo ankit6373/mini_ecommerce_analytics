@@ -8,26 +8,23 @@ USE SCHEMA COMMON;
 -- CREATE TABLE (REPLACE IF EXISTS)
 CREATE OR REPLACE TABLE DIM_DATE (
   DATE_ID            NUMBER        PRIMARY KEY COMMENT 'YYYYMMDD SURROGATE KEY',
-  FULL_DATE          DATE          COMMENT 'CALENDAR DATE',
+  FULL_DATE          DATE          COMMENT 'It stores full Calender date',
   DAY_OF_WEEK_ISO    NUMBER        COMMENT '1=MON ... 7=SUN (ISO)',
-  DAY_NAME           STRING        COMMENT 'DAY NAME (ABBREV)',
+  DAY_NAME           STRING        COMMENT 'it stores the name of the day',
   WEEK_OF_YEAR_ISO   NUMBER        COMMENT 'ISO WEEK NUMBER (1-53)',
-  MONTH_NUM          NUMBER        COMMENT 'MONTH NUMBER (1-12)',
-  MONTH_NAME         STRING        COMMENT 'MONTH NAME (ABBREV)',
-  QUARTER_NUM        NUMBER        COMMENT 'QUARTER NUMBER (1-4)',
-  YEAR_NUM           NUMBER        COMMENT 'CALENDAR YEAR',
-  IS_WEEKEND         BOOLEAN       COMMENT 'TRUE IF SAT/SUN',
-  IS_MONTH_START     BOOLEAN       COMMENT 'TRUE IF FIRST DAY OF MONTH',
-  IS_MONTH_END       BOOLEAN       COMMENT 'TRUE IF LAST DAY OF MONTH',
-  IS_QUARTER_START   BOOLEAN       COMMENT 'TRUE IF FIRST DAY OF QUARTER',
-  IS_QUARTER_END     BOOLEAN       COMMENT 'TRUE IF LAST DAY OF QUARTER',
-  IS_YEAR_START      BOOLEAN       COMMENT 'TRUE IF JAN 1',
-  IS_YEAR_END        BOOLEAN       COMMENT 'TRUE IF DEC 31'
+  MONTH_NUM          NUMBER        COMMENT 'It stores month number (1-12)',
+  MONTH_NAME         STRING        COMMENT 'It stores month name',
+  QUARTER_NUM        NUMBER        COMMENT 'It stores Quarter number (1-4)',
+  YEAR_NUM           NUMBER        COMMENT 'it stores Calender year',
+  IS_WEEKEND         BOOLEAN       COMMENT 'TRUE if SAT/SUN',
+  IS_MONTH_START     BOOLEAN       COMMENT 'TRUE if First day of month',
+  IS_MONTH_END       BOOLEAN       COMMENT 'TRUE if last day of month',
+  IS_QUARTER_START   BOOLEAN       COMMENT 'TRUE if first day of quarter',
+  IS_QUARTER_END     BOOLEAN       COMMENT 'TRUE if last day of quarter',
+  IS_YEAR_START      BOOLEAN       COMMENT 'TRUE if JAN 1',
+  IS_YEAR_END        BOOLEAN       COMMENT 'TRUE if DEC 31'
 )
-COMMENT = 'CONFORMED CALENDAR DIMENSION (ONE ROW PER DATE)';
-
--- FULL REFRESH LOAD
-TRUNCATE TABLE DIM_DATE;
+COMMENT = 'It is a calender loopup table. It stores one row per calender date';
 
 -- CHOOSE RANGE (EDIT THESE TWO LINES IF NEEDED)
 SET START_DATE = TO_DATE('2015-01-01');

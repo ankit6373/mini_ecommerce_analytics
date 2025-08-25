@@ -50,3 +50,27 @@ LEFT JOIN F ON F.DATE_ID = COALESCE(R.DATE_ID, C.DATE_ID);
 -- Notes:
 -- - Join to both calendar and fiscal dims so consumers can slice either way.
 -- - GROSS_MARGIN uses gross values; NET_GROSS_MARGIN uses net values (after refunds/return reversals).
+!set variable_substitution=false;
+
+ALTER VIEW VW_PNL_DAILY SET COMMENT = 'Daily Profit & Loss (PnL) style view: combines revenue and COGS with both calendar and fiscal time labels.';
+
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN DATE_ID COMMENT 'YYYYMMDD date key for joins';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN FULL_DATE COMMENT 'Calendar date';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN YEAR_NUM COMMENT 'Calendar year number';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN QUARTER_NUM COMMENT 'Calendar quarter number (1–4)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN MONTH_NUM COMMENT 'Calendar month number (1–12)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN FISCAL_YEAR COMMENT 'Fiscal year number (from DIM_FISCAL_CALENDAR)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN FISCAL_QUARTER_NUM COMMENT 'Fiscal quarter number (1–4)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN FISCAL_MONTH_NUM COMMENT 'Fiscal month number (1–12)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN FISCAL_YEAR_LABEL COMMENT 'Fiscal year label (e.g., FY2025)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN FISCAL_QTR_LABEL COMMENT 'Fiscal quarter label (e.g., FQ3)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN FISCAL_MONTH_NAME COMMENT 'Fiscal month short name (e.g., JAN)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN GROSS_REVENUE COMMENT 'Sum of item sales by order date';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN REFUNDS COMMENT 'Refunds (negative impact on revenue)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN COGS COMMENT 'Cost of goods sold (unit cost at sale)';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN COGS_RETURN_REVERSAL COMMENT 'COGS reversed due to returns';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN GROSS_MARGIN COMMENT 'Gross revenue – COGS';
+ALTER VIEW VW_PNL_DAILY MODIFY COLUMN NET_GROSS_MARGIN COMMENT 'Net revenue – Net COGS (after refunds/returns)';
+
+
+

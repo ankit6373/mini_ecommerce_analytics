@@ -117,16 +117,58 @@ run_target() {
   esac
 }
 
+run_changed_range() {
+  local range="$1"  
+  # list changed .sql under SQL_ROOT
+  mapfile -t changed < <(git diff --name-only "$range" | grep -E '^'"$SQL_ROOT"'/.*\.sql$' || true)
+  if [ ${#changed[@]} -eq 0 ]; then
+    echo "ℹ️  No changed SQL in $range"
+    return 0
+  fi
+  echo "🧩 Changed SQL files in $range:"
+  printf ' - %s\n' "${changed[@]}"
+  printf '%s\n' "${changed[@]}" | sort -u | while IFS= read -r f; do
+    run_target "$f"
+  done
+}
+
 # ===== main =====
 need_snowsql
 echo "=== Running (ENV=${ENV}) ==="
 
-if [ $# -eq 0 ]; then
-  usage
-  exit 1
+CHANGED_RANGE=""
+args=()
+while (( "$#" )); do
+  case "$1" in
+    --changed)
+      shift
+      CHANGED_RANGE="${1:-}"
+      if [ -z "$CHANGED_RANGE" ]; then echo "❌ --changed needs a <A..B> range"; usage; exit 2; fi
+      ;;
+    -h|--help)
+      usage; exit 0 ;;
+    *)
+      args+=("$1") ;;
+  esac
+  shift || true
+done
+
+# changed-only (CI) if requested
+if [ -n "$CHANGED_RANGE" ]; then
+  run_changed_range "$CHANGED_RANGE"
+  # If CI only wants changed files, exit early when no explicit targets
+  if [ ${#args[@]} -eq 0 ]; then
+    echo "✅ Done (changed-only, ENV=${ENV})"
+    exit 0
+  fi
 fi
 
-for target in "$@"; do
+# explicit targets (local or CI)
+if [ ${#args[@]} -eq 0 ]; then
+  usage; exit 1
+fi
+
+for target in "${args[@]}"; do
   run_target "$target"
 done
 

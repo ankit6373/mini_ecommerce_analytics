@@ -24,7 +24,7 @@ FROM &{ENV}_BRONZE.RAW.ORDER_ITEMS;
 ALTER TABLE ORDER_ITEMS ADD CONSTRAINT PK_ORDER_ITEMS PRIMARY KEY(ORDER_ITEM_ID);
 
 -- Add a desription for the entire table
-ALTER TABLE INVENTORY_ITEMS SET COMMENT = 'This table stores information about the orders including their status, delivery date, shipping date and sales price';
+ALTER TABLE ORDER_ITEMS SET COMMENT = 'This table stores information about the orders including their status, delivery date, shipping date and sales price. This table stores the full details of the orders with their sales price. We will be mostly using this table for further analysis related to orders';
 
 -- Add comments to each column
 ALTER TABLE ORDER_ITEMS MODIFY COLUMN ORDER_ITEM_ID COMMENT 'It stores the unique order item ID';

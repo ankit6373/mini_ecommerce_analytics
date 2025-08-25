@@ -29,7 +29,7 @@ ALTER TABLE EVENTS SET COMMENT = 'This table stores information about the events
 
 -- Add comments to each column
 ALTER TABLE EVENTS MODIFY COLUMN EVENT_ID COMMENT 'It stores the unique event ID';
-ALTER TABLE EVENTS MODIFY COLUMN CUSTOMER_ID COMMENT 'It stores the unique customer ID';
+ALTER TABLE EVENTS MODIFY COLUMN CUSTOMER_ID COMMENT 'It stores the unique customer ID associated with the event';
 ALTER TABLE EVENTS MODIFY COLUMN SEQUENCE COMMENT 'It stores the sequence number of the event';
 ALTER TABLE EVENTS MODIFY COLUMN SESSION_ID COMMENT 'It stores the session ID of the event';
 ALTER TABLE EVENTS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time when the event was created';
