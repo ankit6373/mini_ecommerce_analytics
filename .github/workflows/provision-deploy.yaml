@@ -27,7 +27,7 @@ jobs:
       SNOWFLAKE_ROLE:      ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
 
       # SnowSQL reads SNOWSQL_PWD
-      SNOWSQL_PWD:         ${{ env.SNOWFLAKE_PASSWORD }}
+      SNOWSQL_PWD:         ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
 
     steps:
       - uses: actions/checkout@v4

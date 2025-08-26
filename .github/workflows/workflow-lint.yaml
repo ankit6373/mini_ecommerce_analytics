@@ -1,0 +1,19 @@
+name: Workflow Lint
+
+on:
+  pull_request:
+    branches: [ qa, main ]
+    paths:
+      - ".github/workflows/**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install actionlint
+        run: |
+          curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- -b /usr/local/bin
+      - name: Run actionlint
+        run: |
+          actionlint -color
