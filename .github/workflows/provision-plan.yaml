@@ -34,7 +34,7 @@ jobs:
 
       - name: Install Toolkit
         run: |
-          curl -L https://toolkit.phdata.io/install.sh | bash
+          curl -sSfL https://toolkit.phdata.io/install.sh | bash
           echo "$HOME/.phdata/bin" >> $GITHUB_PATH
 
       - name: Provision (plan only)
