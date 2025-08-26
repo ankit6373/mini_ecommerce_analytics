@@ -92,4 +92,4 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.INVENTORY_ITEMS (
   PRODUCT_RETAIL_PRICE  NUMBER(18,2) COMMENT 'It stores the retail price of the product',
   PRODUCT_DEPARTMENT    VARCHAR COMMENT 'It stores the department of the product',
   PRODUCT_SKU           VARCHAR COMMENT 'It stores the SKU of the product'
-) COMMENT = 'it stores information about inventory items, when they were sold and their  cost';
+) COMMENT = 'it stores information about inventory items, when they were sold and their cost';

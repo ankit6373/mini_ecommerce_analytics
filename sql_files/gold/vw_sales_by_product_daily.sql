@@ -4,13 +4,6 @@
 USE DATABASE &{ENV}_GOLD;
 USE SCHEMA ANALYTICS;
 
-
-!set variable_substitution=true;
-
--- Target context = GOLD/ANALYTICS for the current ENV (DEV/QA/PROD)
-USE DATABASE &{ENV}_GOLD;
-USE SCHEMA ANALYTICS;
-
 CREATE OR REPLACE VIEW VW_SALES_BY_PRODUCT_DAILY AS
 SELECT
   OI.ORDER_DATE_ID                                             AS DATE_ID,
@@ -20,7 +13,7 @@ SELECT
   P.BRAND                                                      AS BRAND,
   P.CATEGORY                                                   AS CATEGORY,
   P.DEPARTMENT                                                 AS DEPARTMENT,
-  SUM(COALESCE(OI.QUANTITY, 1))                              AS UNITS,
+  SUM(COALESCE(OI.QUANTITY, 1))                                AS UNITS,
   SUM(OI.SALES_PRICE)                                          AS GROSS_REVENUE,
   SUM(COALESCE(OI.UNIT_COST_AT_SALE, 0))                       AS EST_COGS,
   SUM(OI.SALES_PRICE) - SUM(COALESCE(OI.UNIT_COST_AT_SALE, 0)) AS GROSS_MARGIN,

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ===== Config / Env =====
+#  Config / Env
 ENV="${ENV:-DEV}"  # override with ENV=QA / ENV=PROD
 SQL_ROOT="sql_files"
 
@@ -38,10 +38,10 @@ Examples:
 EOF
 }
 
-# ===== helpers =====
+# helpers functions
 need_snowsql() {
   command -v "$SNOWSQL_CMD" >/dev/null 2>&1 || {
-    echo "❌ '$SNOWSQL_CMD' not found on PATH. Set SNOWSQL_CMD to its full path or add it to PATH."
+    echo " '$SNOWSQL_CMD' not found on PATH. Set SNOWSQL_CMD to its full path or add it to PATH."
     exit 127
   }
 }
@@ -110,7 +110,7 @@ run_target() {
       elif [ -f "$path" ]; then
         run_sql_file "$path"
       else
-        echo "❌ Not found: $path"
+        echo "Not found: $path"
         exit 1
       fi
       ;;
@@ -122,17 +122,17 @@ run_changed_range() {
   # list changed .sql under SQL_ROOT
   mapfile -t changed < <(git diff --name-only "$range" | grep -E '^'"$SQL_ROOT"'/.*\.sql$' || true)
   if [ ${#changed[@]} -eq 0 ]; then
-    echo "ℹ️  No changed SQL in $range"
+    echo " No changed SQL in $range"
     return 0
   fi
-  echo "🧩 Changed SQL files in $range:"
+  echo " Changed SQL files in $range:"
   printf ' - %s\n' "${changed[@]}"
   printf '%s\n' "${changed[@]}" | sort -u | while IFS= read -r f; do
     run_target "$f"
   done
 }
 
-# ===== main =====
+# main 
 need_snowsql
 echo "=== Running (ENV=${ENV}) ==="
 
@@ -143,7 +143,7 @@ while (( "$#" )); do
     --changed)
       shift
       CHANGED_RANGE="${1:-}"
-      if [ -z "$CHANGED_RANGE" ]; then echo "❌ --changed needs a <A..B> range"; usage; exit 2; fi
+      if [ -z "$CHANGED_RANGE" ]; then echo " --changed needs a <A..B> range"; usage; exit 2; fi
       ;;
     -h|--help)
       usage; exit 0 ;;
@@ -158,7 +158,7 @@ if [ -n "$CHANGED_RANGE" ]; then
   run_changed_range "$CHANGED_RANGE"
   # If CI only wants changed files, exit early when no explicit targets
   if [ ${#args[@]} -eq 0 ]; then
-    echo "✅ Done (changed-only, ENV=${ENV})"
+    echo " Done (changed-only, ENV=${ENV})"
     exit 0
   fi
 fi
@@ -172,4 +172,4 @@ for target in "${args[@]}"; do
   run_target "$target"
 done
 
-echo "✅ Done (ENV=${ENV})"
+echo "Done (ENV=${ENV})"
