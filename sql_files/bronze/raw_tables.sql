@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.USERS (
   TRAFFIC_SOURCE   VARCHAR COMMENT 'It stores the traffic source of the user',
   CREATED_AT       TIMESTAMP_NTZ COMMENT 'It stores the date and time when the user was created',
   USER_GEOM        VARCHAR COMMENT 'It stores the geom of the user'
-) COMMENT = 'This table stores information about all the users including their age,gender,location and the date when they created account on the website, ';
+) COMMENT = 'This table stores information about all the users including their age,gender,location and the date when they created account on the website/app';
 
 CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.EVENTS (
   ID             NUMBER COMMENT 'It stores the unique event ID',
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.EVENTS (
   TRAFFIC_SOURCE VARCHAR COMMENT 'It stores the traffic source of the event',
   URI            VARCHAR COMMENT 'It stores the URI of the event',
   EVENT_TYPE     VARCHAR COMMENT 'It stores the type of the event'
-) COMMENT = " It stores event related information. Example, which user did what in the website/app and through which traffic source and browser";
+) COMMENT = "It stores event related information. Example, which user did what in the website/app and through which traffic source and browser";
 
 CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.PRODUCTS (
   ID                     NUMBER COMMENT 'It stores unique product ID',
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.DISTRIBUTION_CENTERS (
   LATTITUDE               FLOAT COMMENT 'It stores Latitude of distribution center',
   LONGITUDE               FLOAT COMMENT 'It stores Longitude of distribution center',
   DISTRIBUTION_CENTER_GEOM VARCHAR COMMENT 'It stores geom distribution center'
-) COMMENT = ' It stores information about all distribution centers with their location details';
+) COMMENT = 'It stores information about all distribution centers with their location details';
 
 CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.INVENTORY_ITEMS (
   ID                    NUMBER COMMENT 'It stores the unique inventory item ID',
@@ -92,4 +92,4 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.INVENTORY_ITEMS (
   PRODUCT_RETAIL_PRICE  NUMBER(18,2) COMMENT 'It stores the retail price of the product',
   PRODUCT_DEPARTMENT    VARCHAR COMMENT 'It stores the department of the product',
   PRODUCT_SKU           VARCHAR COMMENT 'It stores the SKU of the product'
-) COMMENT = 'it stores information about inventory items, when they were sold and their cost';
+) COMMENT = 'It stores information about inventory items, when they were sold and their cost';
