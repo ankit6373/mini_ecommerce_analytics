@@ -28,6 +28,12 @@ FROM SALES_D S
 FULL OUTER JOIN RETURNS_D R
   ON S.DATE_ID = R.DATE_ID;
 
+-- We used outer join here, because it is possible that we will have a day that has sales but not return
+-- and day that has returned but no sales (in case customers returned old orders)
+-- with outer join, if a day exists only in sales, it will still apears with returns 0 and same for returns
+-- if a date exists in both then they are matched
+-- this way every relevant date showes up in this table
+
 
 ALTER TABLE FACT_REVENUE_DAILY SET COMMENT = 'It stores daily revenue rollup: gross sales by order date, refunds by return date, and net revenue.';
 

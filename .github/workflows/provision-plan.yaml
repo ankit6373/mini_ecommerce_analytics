@@ -1,0 +1,50 @@
+name: Provision Plan
+
+on:
+  pull_request:
+    branches: [ qa, main ]
+    paths:
+      - 'provision/**'
+      - 'sql_files/**'
+      - 'snowsql/**'
+      - 'toolkit.conf'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+
+    env:
+      # Pick environment from the PR's target branch
+      ENV: ${{ github.base_ref == 'qa' && 'QA' || 'PROD' }}
+
+      # Shared inputs
+      SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+
+      # Per-env creds
+      SNOWFLAKE_USER:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
+      SNOWFLAKE_PASSWORD:  ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
+      SNOWFLAKE_ROLE:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
+
+      # SnowSQL reads SNOWSQL_PWD
+      SNOWSQL_PWD:         ${{ env.SNOWFLAKE_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Toolkit
+        run: |
+          curl -L https://toolkit.phdata.io/install.sh | bash
+          echo "$HOME/.phdata/bin" >> $GITHUB_PATH
+
+      - name: Provision (plan only)
+        run: toolkit provision apply --plan
+
+      # (Optional) show which SQL would run (changed files list only)
+      - name: List changed SQL files
+        shell: bash
+        run: |
+          git fetch --no-tags --prune --depth=1 origin ${{ github.base_ref }}
+          BASE_SHA=${{ github.event.pull_request.base.sha }}
+          HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep '^sql_files/.*\.sql$' || echo "No SQL changes."

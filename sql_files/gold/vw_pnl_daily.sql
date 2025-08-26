@@ -47,7 +47,6 @@ FULL OUTER JOIN C ON R.DATE_ID = C.DATE_ID
 LEFT JOIN D ON D.DATE_ID = COALESCE(R.DATE_ID, C.DATE_ID)
 LEFT JOIN F ON F.DATE_ID = COALESCE(R.DATE_ID, C.DATE_ID);
 
--- Notes:
 -- - Join to both calendar and fiscal dims so consumers can slice either way.
 -- - GROSS_MARGIN uses gross values; NET_GROSS_MARGIN uses net values (after refunds/return reversals).
 !set variable_substitution=false;

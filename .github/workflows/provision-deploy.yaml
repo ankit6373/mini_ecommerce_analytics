@@ -1,0 +1,54 @@
+name: Provision Deploy
+
+on:
+  push:
+    branches: [ qa, main ]
+    paths:
+      - 'provision/**'
+      - 'sql_files/**'
+      - 'snowsql/**'
+      - 'toolkit.conf'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      # Pick environment from the branch being pushed
+      ENV: ${{ github.ref_name == 'qa' && 'QA' || 'PROD' }}
+
+      # Shared inputs
+      SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+
+      # Per-env creds
+      SNOWFLAKE_USER:      ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
+      SNOWFLAKE_PASSWORD:  ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
+      SNOWFLAKE_ROLE:      ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
+
+      # SnowSQL reads SNOWSQL_PWD
+      SNOWSQL_PWD:         ${{ env.SNOWFLAKE_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Toolkit
+        run: |
+          curl -L https://toolkit.phdata.io/install.sh | bash
+          echo "$HOME/.phdata/bin" >> $GITHUB_PATH
+
+      - name: Apply Provision (creates/updates QA_* or PROD_*)
+        run: toolkit provision apply --approve --config toolkit.conf
+
+      - name: Install SnowSQL
+        run: |
+          python3 -m pip install --user snowsql
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Run changed SQL
+        shell: bash
+        run: |
+          BASE_SHA=${{ github.event.before }}
+          HEAD_SHA=${{ github.sha }}
+          bash snowsql/sql_run.sh --changed "$BASE_SHA..$HEAD_SHA"
+
