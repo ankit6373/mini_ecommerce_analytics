@@ -81,19 +81,6 @@ jobs:
           fi
           toolkit --version || true
 
-      - name: Authenticate Toolkit
-        env:
-          TOOLKIT_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Primary path: write token into global config
-          if ! toolkit auth --set; then
-            # First time on a fresh runner? Initialize non-interactively, then set.
-            toolkit init --silent
-            toolkit auth --set
-          fi
-
       - name: Provision (plan only)
         run: toolkit provision apply --plan --conf authToken="$TOOLKIT_TOKEN"
 
