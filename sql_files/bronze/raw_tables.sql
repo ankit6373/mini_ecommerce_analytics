@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.PRODUCTS (
   CATEGORY               VARCHAR COMMENT 'It stores category of the product',
   NAME                   VARCHAR COMMENT 'It stores name of the product',
   BRAND                  VARCHAR COMMENT 'It stores Brand of the product',
-  RETAIL_PRICE           NUMBER(18,2) COMMENT 'It stores Retail Price of the product',
+  RETAIL_PRICE           NUMBER(18,2) COMMENT 'It stores Retail price of the product',
   DEPARTMENT             VARCHAR COMMENT 'It stores department of the product Women/Men/Kids',
   SKU                    VARCHAR COMMENT 'It stores SKU of the product',
   DISTRIBUTION_CENTER_ID NUMBER COMMENT 'It stores distribution center id of the product'
