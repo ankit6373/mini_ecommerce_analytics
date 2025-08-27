@@ -35,7 +35,8 @@ jobs:
       SNOWFLAKE_PASSWORD:  ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
       SNOWFLAKE_ROLE:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
       SNOWSQL_PWD:         ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
-
+      SNOWFLAKE_AUTHENTICATOR: "snowflake"
+    
     steps:
       - uses: actions/checkout@v4
 
