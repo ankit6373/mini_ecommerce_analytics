@@ -58,35 +58,23 @@ jobs:
           curl -sSfL "$TOOLKIT_URL" -o "/tmp/toolkit-${TOOLKIT_VERSION}.zip"
           unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$ROOT"
 
-          # Prefer an existing 'toolkit' executable (handles nested directory layout)
-          BIN_PATH="$(find "$ROOT" -maxdepth 2 -type f -name toolkit -perm -u+x | head -n1 || true)"
+          # Look for the 'toolkit' launcher script, even if not executable yet
+          BIN_PATH="$(find "$ROOT" -maxdepth 2 -type f -name toolkit | head -n1 || true)"
           if [ -n "$BIN_PATH" ]; then
-            chmod +x "$BIN_PATH"
-            DIRNAME="$(dirname "$BIN_PATH")"
-            echo "$DIRNAME" >> "$GITHUB_PATH"
+          chmod +x "$BIN_PATH"
+          DIRNAME="$(dirname "$BIN_PATH")"
+          echo "$DIRNAME" >> "$GITHUB_PATH"
           else
-            # Fallback to shaded JAR launcher
-            JAR_FILE="$(find "$ROOT" -maxdepth 2 -type f -name "toolkit-cli-${TOOLKIT_VERSION}-*.jar" | head -n1 || true)"
-            if [ -n "$JAR_FILE" ]; then
-              LAUNCHER="$ROOT/toolkit"
-              {
-                echo '#!/usr/bin/env bash'
-                printf 'exec java -jar "%s" "$@"\n' "$JAR_FILE"
-              } > "$LAUNCHER"
-              chmod +x "$LAUNCHER"
-              echo "$ROOT" >> "$GITHUB_PATH"
-            else
-              echo "❌ Could not find toolkit binary or jar in extracted archive. Contents:"
-              find "$ROOT" -maxdepth 2 -print
-              exit 1
-            fi
+            echo "Could not find 'toolkit' launcher script in extracted archive. Contents:"
+            find "$ROOT" -maxdepth 2 -print
+            exit 1
           fi
 
           WHICH_TOOLKIT="$(command -v toolkit || true)"
           if [ -n "$WHICH_TOOLKIT" ]; then
             printf 'Toolkit on PATH: %s\n' "$WHICH_TOOLKIT"
           else
-            echo "Toolkit not found on PATH (continuing anyway for diagnostics)"
+            echo "Toolkit not found on PATH (unexpected)"; exit 1
           fi
           toolkit --version || true
 
