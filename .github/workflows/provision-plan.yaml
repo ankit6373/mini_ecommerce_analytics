@@ -95,7 +95,7 @@ jobs:
           fi
 
       - name: Provision (plan only)
-        run: toolkit provision apply --plan
+        run: toolkit provision apply --plan --conf authToken="$TOOLKIT_TOKEN"
 
       - name: List changed SQL files (informational)
         shell: bash

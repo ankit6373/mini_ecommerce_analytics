@@ -95,7 +95,7 @@ jobs:
           fi
 
       - name: Apply Provision (creates/updates QA_* or PROD_*)
-        run: toolkit provision apply --approve
+        run: toolkit provision apply --approve --conf authToken="$TOOLKIT_TOKEN"
 
       - name: Install SnowSQL
         shell: bash
