@@ -57,19 +57,19 @@ jobs:
           mkdir -p "$HOME/.phdata"
           echo "Downloading Toolkit: $TOOLKIT_URL"
           curl -sSfL "$TOOLKIT_URL" -o /tmp/toolkit.zip
-          unzip -q /tmp/toolkit.zip -d "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
+          unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
 
           # Put toolkit on PATH (supports either bin/ or jar layout)
           if [ -x "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/bin/toolkit" ]; then
             echo "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/bin" >> $GITHUB_PATH
           elif compgen -G "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit-cli-${TOOLKIT_VERSION}-*.jar" > /dev/null; then
             JAR=$(ls "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"/toolkit-cli-${TOOLKIT_VERSION}-*.jar | head -n1)
-            cat > "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit" <<'LAUNCH'
-            #!/usr/bin/env bash
-            exec java -jar "$(dirname "$0")"/toolkit-cli-*.jar "$@"
-            LAUNCH
-            chmod +x "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit"
-            echo "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}" >> $GITHUB_PATH
+            # Write a tiny launcher without using a heredoc
+            LAUNCHER="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit"
+            printf '%s\n' '#!/usr/bin/env bash' \
+            'exec java -jar "$(dirname "$0")"/toolkit-cli-*.jar "$@"' > "$LAUNCHER"
+            chmod +x "$LAUNCHER"
+            echo "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}" >> "$GITHUB_PATH"
           else
             echo "❌ Could not find toolkit binary or jar in extracted archive:"
             ls -R "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
