@@ -82,7 +82,8 @@ jobs:
       - name: Authenticate Toolkit
         env:
           TOOLKIT_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
-        run: toolkit auth --set "$TOOLKIT_TOKEN"
+        run: |
+          printf '%s\n' "$TOOLKIT_TOKEN" | toolkit auth --set
 
       - name: Provision (plan only)
         run: toolkit provision apply --plan
