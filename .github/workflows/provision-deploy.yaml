@@ -82,7 +82,7 @@ jobs:
       - name: Authenticate Toolkit
         env:
           TOOLKIT_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
-        run: toolkit auth set-token "$TOOLKIT_TOKEN"
+        run: toolkit auth --set "$TOOLKIT_TOKEN"
 
       - name: Apply Provision (creates/updates QA_* or PROD_*)
         run: toolkit provision apply --approve
