@@ -59,14 +59,20 @@ jobs:
           curl -sSfL "$TOOLKIT_URL" -o "/tmp/toolkit-${TOOLKIT_VERSION}.zip"
           unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
 
-          if [ -x "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/bin/toolkit" ]; then
-            echo "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/bin" >> "$GITHUB_PATH"
-          elif compgen -G "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit-cli-${TOOLKIT_VERSION}-"*.jar > /dev/null; then
-            LAUNCHER="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit"
+          ROOT="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
+          NESTED_DIR="$ROOT/toolkit-cli-${TOOLKIT_VERSION}"
+
+          if [ -x "$NESTED_DIR/toolkit" ]; then
+            chmod +x "$NESTED_DIR/toolkit"
+            echo "$NESTED_DIR" >> "$GITHUB_PATH"
+            TOOLKIT_BIN="$NESTED_DIR/toolkit"
+          elif [ -f "$NESTED_DIR/toolkit-cli-${TOOLKIT_VERSION}-all.jar" ]; then
+            LAUNCHER="$ROOT/toolkit"
             printf "%s\n" "#!/usr/bin/env bash" \
-              "exec java -jar \"\$(dirname \"\$0\")\"/toolkit-cli-*.jar \"\$@\"" > "$LAUNCHER"
+              "exec java -jar \"$NESTED_DIR/toolkit-cli-${TOOLKIT_VERSION}-all.jar\" \"\$@\"" > "$LAUNCHER"
             chmod +x "$LAUNCHER"
-            echo "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}" >> "$GITHUB_PATH"
+            echo "$ROOT" >> "$GITHUB_PATH"
+            TOOLKIT_BIN="$ROOT/toolkit"
           else
             echo "❌ Could not find toolkit binary or jar in extracted archive:"
             find "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}" -type f
