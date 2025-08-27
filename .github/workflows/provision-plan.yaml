@@ -36,7 +36,8 @@ jobs:
       SNOWFLAKE_ROLE:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
       SNOWSQL_PWD:         ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
       SNOWFLAKE_AUTHENTICATOR: "snowflake"
-    
+      TOOLKIT_AUTH_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -83,8 +84,15 @@ jobs:
       - name: Authenticate Toolkit
         env:
           TOOLKIT_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
+        shell: bash
         run: |
-          printf '%s\n' "$TOOLKIT_TOKEN" | toolkit auth --set
+          set -euo pipefail
+          # Primary path: write token into global config
+          if ! toolkit auth --set; then
+            # First time on a fresh runner? Initialize non-interactively, then set.
+            toolkit init --silent
+            toolkit auth --set
+          fi
 
       - name: Provision (plan only)
         run: toolkit provision apply --plan
