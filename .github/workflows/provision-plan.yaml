@@ -96,9 +96,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # SnowSQL uses a major/minor bucket + full versioned file
+          SNOWSQL_MAJOR_MINOR="1.2"
           SNOWSQL_VERSION="1.2.31"
           PKG="snowsql-${SNOWSQL_VERSION}-linux_x86_64.bash"
-          curl -sSfL "https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/${SNOWSQL_VERSION}/${PKG}" -o "/tmp/${PKG}"
+          URL="https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/${SNOWSQL_MAJOR_MINOR}/linux_x86_64/${PKG}"
+          echo "Downloading: $URL"
+          curl -sSfL "$URL" -o "/tmp/${PKG}"
           bash "/tmp/${PKG}" -b -p "$HOME/.local/snowsql"
           echo "$HOME/.local/snowsql/bin" >> "$GITHUB_PATH"
           snowsql -v
