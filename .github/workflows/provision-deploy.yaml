@@ -12,6 +12,7 @@ on:
 
 jobs:
   lint:
+    name: Lint Workflow
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +24,7 @@ jobs:
         run: actionlint -color
 
   deploy:
+    name: Snowflake Deploy
     runs-on: ubuntu-latest
     needs: lint
     env:
@@ -60,24 +62,28 @@ jobs:
           curl -sSfL "$TOOLKIT_URL" -o "/tmp/toolkit-${TOOLKIT_VERSION}.zip"
           unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$ROOT"
 
-          ROOT="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
-          NESTED_DIR="$ROOT/toolkit-cli-${TOOLKIT_VERSION}"
+          # Prefer an existing 'toolkit' executable (handles nested directory layout)
+          BIN_PATH="$(find "$ROOT" -maxdepth 2 -type f -name toolkit -perm -u+x | head -n1 || true)"
 
-          if [ -x "$ROOT/toolkit-cli-${TOOLKIT_VERSION}/toolkit" ]; then
-            chmod +x "$ROOT/toolkit-cli-${TOOLKIT_VERSION}/toolkit"
-            echo "$ROOT/toolkit-cli-${TOOLKIT_VERSION}" >> "$GITHUB_PATH"
-          elif JAR_FILE="$(find "$ROOT" -maxdepth 2 -name "toolkit-cli-${TOOLKIT_VERSION}-*.jar" | head -n1 || true)"; then
-            LAUNCHER="$ROOT/toolkit"
-            {
-              echo '#!/usr/bin/env bash'
-              echo "exec java -jar \"$JAR_FILE\" \"\$@\""
-            } > "$LAUNCHER"
-            chmod +x "$LAUNCHER"
-            echo "$ROOT" >> "$GITHUB_PATH"
+          if [ -n "$BIN_PATH" ]; then
+            chmod +x "$BIN_PATH"
+            echo "$(dirname "$BIN_PATH")" >> "$GITHUB_PATH"
           else
-            echo "Could not find toolkit binary or jar in extracted archive:"
-            find "$ROOT" -maxdepth 2 -print
-            exit 1
+            # Fallback to shaded JAR launcher
+            JAR_FILE="$(find "$ROOT" -maxdepth 2 -type f -name "toolkit-cli-${TOOLKIT_VERSION}-*.jar" | head -n1 || true)"
+            if [ -n "$JAR_FILE" ]; then
+              LAUNCHER="$ROOT/toolkit"
+              {
+                echo '#!/usr/bin/env bash'
+                echo "exec java -jar \"$JAR_FILE\" \"\$@\""
+              } > "$LAUNCHER"
+              chmod +x "$LAUNCHER"
+              echo "$ROOT" >> "$GITHUB_PATH"
+            else
+              echo "Could not find toolkit binary or jar in extracted archive. Contents:"
+              find "$ROOT" -maxdepth 2 -print
+              exit 1
+            fi
           fi
 
           echo "Toolkit version:"
