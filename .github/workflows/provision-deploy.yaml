@@ -88,8 +88,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m pip install --user snowsql
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          SNOWSQL_VERSION="1.2.31"   # pick a stable release
+          SNOWSQL_PKG="snowsql-${SNOWSQL_VERSION}-linux_x86_64.bash"
+          curl -sSfL "https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/${SNOWSQL_VERSION}/${SNOWSQL_PKG}" -o "/tmp/${SNOWSQL_PKG}"
+          bash "/tmp/${SNOWSQL_PKG}" -b -p "$HOME/.local/snowsql"
+          echo "$HOME/.local/snowsql/bin" >> "$GITHUB_PATH"
+          snowsql -v
 
       - name: Run changed SQL
         shell: bash

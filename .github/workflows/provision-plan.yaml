@@ -92,4 +92,30 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -E '^sql_files/.*\.sql$' || echo "No SQL changes."
 
+      - name: Install SnowSQL CLI (pre-check)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SNOWSQL_VERSION="1.2.31"
+          PKG="snowsql-${SNOWSQL_VERSION}-linux_x86_64.bash"
+          curl -sSfL "https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/${SNOWSQL_VERSION}/${PKG}" -o "/tmp/${PKG}"
+          bash "/tmp/${PKG}" -b -p "$HOME/.local/snowsql"
+          echo "$HOME/.local/snowsql/bin" >> "$GITHUB_PATH"
+          snowsql -v
+
+      - name: Snowflake connectivity smoke test (no changes)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Quick “can we connect?” check—no DDL, no changes.
+          SNOWSQL_PWD="$SNOWSQL_PWD" snowsql \
+            -a "$SNOWFLAKE_ACCOUNT" \
+            -u "$SNOWFLAKE_USER" \
+            -w "$SNOWFLAKE_WAREHOUSE" \
+            -r "$SNOWFLAKE_ROLE" \
+            -DENV="${ENV}" \
+            -o exit_on_error=true -o friendly=false \
+            -q "SELECT CURRENT_ACCOUNT(), CURRENT_ROLE(), CURRENT_WAREHOUSE();"
+
+
 

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.ORDERS (
   DELIVERED_AT TIMESTAMP_NTZ COMMENT 'It stores the timestamp when order was delivered',  
   NUM_OF_ITEM  NUMBER(18,0) COMMENT 'It stores number of items in the order'
 )
-COMMENT = 'It stores the order details with its status and customer ID';
+COMMENT = 'It stores the order details with its status and customer id';
 
 CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.ORDER_ITEMS (
   ID              NUMBER COMMENT 'It stores the unique order item ID',
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS DEV_BRONZE.RAW.USERS (
   COUNTRY          VARCHAR COMMENT 'It stores the country of the user',
   LATITUDE         FLOAT COMMENT 'It stores the latitude of the user',
   LONGITUDE        FLOAT COMMENT 'It stores the longitude of the user',
-  TRAFFIC_SOURCE   VARCHAR COMMENT 'It stores the traffic source of the user',
+  TRAFFIC_SOURCE   VARCHAR COMMENT 'It stores the traffic source of user',
   CREATED_AT       TIMESTAMP_NTZ COMMENT 'It stores the date and time when the user was created',
   USER_GEOM        VARCHAR COMMENT 'It stores the geom of the user'
 ) COMMENT = 'This table stores information about all the users including their age,gender,location and the date when they created account on the website/app';
