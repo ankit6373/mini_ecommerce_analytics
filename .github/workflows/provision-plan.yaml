@@ -52,6 +52,7 @@ jobs:
         env:
           TOOLKIT_VERSION: "0.79.0"
           TOOLKIT_URL: "https://repo.phdata.io/3BCJzuXgtfTCoa6c/toolkit-cli/maven/io/phdata/toolkit/toolkit-cli/0.79.0/toolkit-cli-0.79.0.zip"
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$HOME/.phdata"
@@ -61,7 +62,7 @@ jobs:
 
           if [ -x "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/bin/toolkit" ]; then
             echo "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/bin" >> "$GITHUB_PATH"
-          elif JAR="$(find "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}" -maxdepth 1 -name "toolkit-cli-${TOOLKIT_VERSION}-*.jar" | head -n1)"; then
+          elif compgen -G "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit-cli-${TOOLKIT_VERSION}-"*.jar > /dev/null; then
             LAUNCHER="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}/toolkit"
             printf "%s\n" "#!/usr/bin/env bash" \
               "exec java -jar \"\$(dirname \"\$0\")\"/toolkit-cli-*.jar \"\$@\"" > "$LAUNCHER"
