@@ -86,7 +86,12 @@ jobs:
             fi
           fi
 
-          echo "Toolkit version:"
+          WHICH_TOOLKIT="$(command -v toolkit || true)"
+          if [ -n "$WHICH_TOOLKIT" ]; then
+            printf 'Toolkit on PATH: %s\n' "$WHICH_TOOLKIT"
+          else
+            echo "Toolkit not found on PATH (continuing anyway for diagnostics)"
+          fi
           toolkit --version || true
 
       - name: Authenticate Toolkit
