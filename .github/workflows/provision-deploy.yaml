@@ -84,20 +84,35 @@ jobs:
       - name: Apply Provision (creates/updates QA_* or PROD_*)
         run: toolkit provision apply --approve --conf authToken="$TOOLKIT_TOKEN"
 
-      - name: Install SnowSQL
-        shell: bash
+      - name: Install SnowSQL CLI
+        uses: snowflakedb/snowflake-cli-action@v2.0
+        env:
+          SNOWFLAKE_USER:      ${{ env.SNOWFLAKE_USER }}
+          SNOWFLAKE_ACCOUNT:   ${{ env.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD:  ${{ env.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE:      ${{ env.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ env.SNOWFLAKE_WAREHOUSE }}
         run: |
           set -euo pipefail
-          # SnowSQL uses a major/minor bucket + full versioned file
-          SNOWSQL_MAJOR_MINOR="1.2"
-          SNOWSQL_VERSION="1.2.31"
-          PKG="snowsql-${SNOWSQL_VERSION}-linux_x86_64.bash"
-          URL="https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/${SNOWSQL_MAJOR_MINOR}/linux_x86_64/${PKG}"
-          echo "Downloading: $URL"
-          curl -sSfL "$URL" -o "/tmp/${PKG}"
-          bash "/tmp/${PKG}" -b -p "$HOME/.local/snowsql"
-          echo "$HOME/.local/snowsql/bin" >> "$GITHUB_PATH"
-          snowsql -v
+          git fetch --unshallow || true
+
+          BASE_SHA="${{ github.event.before }}"
+          HEAD_SHA="${{ github.sha }}"
+          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -E '^sql_files/.*\.sql$' || true)"
+
+          if [ -z "$CHANGED" ]; then
+            echo "No SQL changes to run."
+            exit 0
+          fi
+
+          printf 'Changed SQL files:\n%s\n' "$CHANGED"
+
+          # Execute each file with a temporary connection (-x) and ENV variable
+          while IFS= read -r f; do
+            printf '▶ snow sql -x -f %s --variable ENV=%s\n' "$f" "${ENV}"
+            snow sql -x -f "$f" --variable ENV="${ENV}"
+          done <<< "$CHANGED"
+
 
       - name: Run changed SQL
         shell: bash
