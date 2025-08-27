@@ -12,7 +12,7 @@ on:
 
 jobs:
   lint:
-    name: Lint Workflow
+    name: Lint Workflows
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,14 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     env:
-      # Target env from pushed branch
       ENV: ${{ github.ref_name == 'qa' && 'QA' || 'PROD' }}
-
-      # Shared inputs
       SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-
-      # Per-env creds
       SNOWFLAKE_USER:      ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
       SNOWFLAKE_PASSWORD:  ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
       SNOWFLAKE_ROLE:      ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
@@ -54,33 +49,32 @@ jobs:
         env:
           TOOLKIT_VERSION: "0.79.0"
           TOOLKIT_URL: "https://repo.phdata.io/3BCJzuXgtfTCoa6c/toolkit-cli/maven/io/phdata/toolkit/toolkit-cli/0.79.0/toolkit-cli-0.79.0.zip"
+        shell: bash
         run: |
           set -euo pipefail
           ROOT="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
           mkdir -p "$ROOT"
-          echo "Downloading Toolkit: $TOOLKIT_URL"
+          printf 'Downloading Toolkit: %s\n' "$TOOLKIT_URL"
           curl -sSfL "$TOOLKIT_URL" -o "/tmp/toolkit-${TOOLKIT_VERSION}.zip"
           unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$ROOT"
 
-          # Prefer an existing 'toolkit' executable (handles nested directory layout)
           BIN_PATH="$(find "$ROOT" -maxdepth 2 -type f -name toolkit -perm -u+x | head -n1 || true)"
-
           if [ -n "$BIN_PATH" ]; then
             chmod +x "$BIN_PATH"
-            echo "$(dirname "$BIN_PATH")" >> "$GITHUB_PATH"
+            DIRNAME="$(dirname "$BIN_PATH")"
+            echo "$DIRNAME" >> "$GITHUB_PATH"
           else
-            # Fallback to shaded JAR launcher
             JAR_FILE="$(find "$ROOT" -maxdepth 2 -type f -name "toolkit-cli-${TOOLKIT_VERSION}-*.jar" | head -n1 || true)"
             if [ -n "$JAR_FILE" ]; then
               LAUNCHER="$ROOT/toolkit"
               {
                 echo '#!/usr/bin/env bash'
-                echo "exec java -jar \"$JAR_FILE\" \"\$@\""
+                printf 'exec java -jar "%s" "$@"\n' "$JAR_FILE"
               } > "$LAUNCHER"
               chmod +x "$LAUNCHER"
               echo "$ROOT" >> "$GITHUB_PATH"
             else
-              echo "Could not find toolkit binary or jar in extracted archive. Contents:"
+              echo "❌ Could not find toolkit binary or jar in extracted archive. Contents:"
               find "$ROOT" -maxdepth 2 -print
               exit 1
             fi
@@ -97,14 +91,15 @@ jobs:
       - name: Authenticate Toolkit
         env:
           TOOLKIT_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
-        run: |
-          toolkit auth set-token "$TOOLKIT_TOKEN"
+        run: toolkit auth set-token "$TOOLKIT_TOKEN"
 
       - name: Apply Provision (creates/updates QA_* or PROD_*)
         run: toolkit provision apply --approve
 
       - name: Install SnowSQL
+        shell: bash
         run: |
+          set -euo pipefail
           python3 -m pip install --user snowsql
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
@@ -114,6 +109,7 @@ jobs:
           set -euo pipefail
           BASE_SHA="${{ github.event.before }}"
           HEAD_SHA="${{ github.sha }}"
-          bash snowsql/sql_run.sh --changed "$BASE_SHA..$HEAD_SHA"
+          bash snowsql/sql_run.sh --changed "${BASE_SHA}..${HEAD_SHA}"
+
 
 
