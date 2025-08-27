@@ -55,28 +55,29 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$HOME/.phdata"
+          ROOT="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
+          mkdir -p "$ROOT"
           echo "Downloading Toolkit: $TOOLKIT_URL"
           curl -sSfL "$TOOLKIT_URL" -o "/tmp/toolkit-${TOOLKIT_VERSION}.zip"
-          unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
+          unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$ROOT"
 
           ROOT="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
           NESTED_DIR="$ROOT/toolkit-cli-${TOOLKIT_VERSION}"
 
-          if [ -x "$NESTED_DIR/toolkit" ]; then
-            chmod +x "$NESTED_DIR/toolkit"
-            echo "$NESTED_DIR" >> "$GITHUB_PATH"
-            TOOLKIT_BIN="$NESTED_DIR/toolkit"
-          elif [ -f "$NESTED_DIR/toolkit-cli-${TOOLKIT_VERSION}-all.jar" ]; then
+          if [ -x "$ROOT/toolkit-cli-${TOOLKIT_VERSION}/toolkit" ]; then
+            chmod +x "$ROOT/toolkit-cli-${TOOLKIT_VERSION}/toolkit"
+            echo "$ROOT/toolkit-cli-${TOOLKIT_VERSION}" >> "$GITHUB_PATH"
+          elif JAR_FILE="$(find "$ROOT" -maxdepth 2 -name "toolkit-cli-${TOOLKIT_VERSION}-*.jar" | head -n1 || true)"; then
             LAUNCHER="$ROOT/toolkit"
-            printf "%s\n" "#!/usr/bin/env bash" \
-              "exec java -jar \"$NESTED_DIR/toolkit-cli-${TOOLKIT_VERSION}-all.jar\" \"\$@\"" > "$LAUNCHER"
+            {
+              echo '#!/usr/bin/env bash'
+              echo "exec java -jar \"$JAR_FILE\" \"\$@\""
+            } > "$LAUNCHER"
             chmod +x "$LAUNCHER"
             echo "$ROOT" >> "$GITHUB_PATH"
-            TOOLKIT_BIN="$ROOT/toolkit"
           else
-            echo "❌ Could not find toolkit binary or jar in extracted archive:"
-            find "$HOME/.phdata/toolkit-${TOOLKIT_VERSION}" -type f
+            echo "Could not find toolkit binary or jar in extracted archive:"
+            find "$ROOT" -maxdepth 2 -print
             exit 1
           fi
 
