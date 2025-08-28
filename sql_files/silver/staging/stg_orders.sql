@@ -22,7 +22,7 @@ FROM &{ENV}_BRONZE.RAW.ORDERS;
 ALTER TABLE ORDERS ADD CONSTRAINT PK_ORDERS PRIMARY KEY(ORDER_ID);
 
 -- Add a desription for the entire table
-ALTER TABLE ORDERS SET COMMENT = 'This table stores information about the orders including their status and customer details';
+ALTER TABLE ORDERS SET COMMENT = 'This table stores information about orders including their status and customer details';
 
 -- Add comments to each column
 ALTER TABLE ORDERS MODIFY COLUMN ORDER_ID COMMENT 'It stores unique order ID';
