@@ -84,8 +84,11 @@ jobs:
       - name: Apply Provision (creates/updates QA_* or PROD_*)
         run: toolkit provision apply --approve --conf authToken="$TOOLKIT_TOKEN"
 
-      - name: Install SnowSQL CLI
+      - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v2.0
+
+      - name: Run changed SQL with Snowflake CLI
+        shell: bash
         env:
           SNOWFLAKE_USER:      ${{ env.SNOWFLAKE_USER }}
           SNOWFLAKE_ACCOUNT:   ${{ env.SNOWFLAKE_ACCOUNT }}
@@ -112,15 +115,3 @@ jobs:
             printf '▶ snow sql -x -f %s --variable ENV=%s\n' "$f" "${ENV}"
             snow sql -x -f "$f" --variable ENV="${ENV}"
           done <<< "$CHANGED"
-
-
-      - name: Run changed SQL
-        shell: bash
-        run: |
-          set -euo pipefail
-          BASE_SHA="${{ github.event.before }}"
-          HEAD_SHA="${{ github.sha }}"
-          bash snowsql/sql_run.sh --changed "${BASE_SHA}..${HEAD_SHA}"
-
-
-
