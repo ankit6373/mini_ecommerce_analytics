@@ -8,43 +8,137 @@ on:
       - 'sql_files/**'
       - 'snowsql/**'
       - 'toolkit.conf'
+      - '.github/workflows/**'
 
 jobs:
-  plan:
+  lint:
+    name: Lint Workflows
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install actionlint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash -o /tmp/download-actionlint.bash
+          bash /tmp/download-actionlint.bash latest /usr/local/bin
+      - name: Run actionlint
+        run: actionlint -color
 
+  plan:
+    name: Snowflake Plan
+    runs-on: ubuntu-latest
+    needs: lint
     env:
-      # Pick environment from the PR's target branch
       ENV: ${{ github.base_ref == 'qa' && 'QA' || 'PROD' }}
-
-      # Shared inputs
       SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-
-      # Per-env creds
       SNOWFLAKE_USER:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
       SNOWFLAKE_PASSWORD:  ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
       SNOWFLAKE_ROLE:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
-
-      # SnowSQL reads SNOWSQL_PWD
-      SNOWSQL_PWD:         ${{ github.ref_name == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
+      SNOWSQL_PWD:         ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
+      SNOWFLAKE_AUTHENTICATOR: "snowflake"
+      TOOLKIT_AUTH_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Toolkit
-        run: |
-          curl -L https://toolkit.phdata.io/install.sh | bash
-          echo "$HOME/.phdata/bin" >> $GITHUB_PATH
+      - name: Set up Java 17 (Toolkit requires Java)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Provision (plan only)
-        run: toolkit provision apply --plan
-
-      # (Optional) show which SQL would run (changed files list only)
-      - name: List changed SQL files
+      - name: Install phData Toolkit CLI
+        env:
+          TOOLKIT_VERSION: "0.79.0"
+          TOOLKIT_URL: "https://repo.phdata.io/3BCJzuXgtfTCoa6c/toolkit-cli/maven/io/phdata/toolkit/toolkit-cli/0.79.0/toolkit-cli-0.79.0.zip"
         shell: bash
         run: |
-          git fetch --no-tags --prune --depth=1 origin ${{ github.base_ref }}
-          BASE_SHA=${{ github.event.pull_request.base.sha }}
-          HEAD_SHA=${{ github.event.pull_request.head.sha }}
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep '^sql_files/.*\.sql$' || echo "No SQL changes."
+          set -euo pipefail
+          ROOT="$HOME/.phdata/toolkit-${TOOLKIT_VERSION}"
+          mkdir -p "$ROOT"
+          printf 'Downloading Toolkit: %s\n' "$TOOLKIT_URL"
+          curl -sSfL "$TOOLKIT_URL" -o "/tmp/toolkit-${TOOLKIT_VERSION}.zip"
+          unzip -q "/tmp/toolkit-${TOOLKIT_VERSION}.zip" -d "$ROOT"
+
+          # Look for the 'toolkit' launcher script, even if not executable yet
+          BIN_PATH="$(find "$ROOT" -maxdepth 2 -type f -name toolkit | head -n1 || true)"
+          if [ -n "$BIN_PATH" ]; then
+          chmod +x "$BIN_PATH"
+          DIRNAME="$(dirname "$BIN_PATH")"
+          echo "$DIRNAME" >> "$GITHUB_PATH"
+          export PATH="$DIRNAME:$PATH"
+          else
+            echo "Could not find 'toolkit' launcher script in extracted archive. Contents:"
+            find "$ROOT" -maxdepth 2 -print
+            exit 1
+          fi
+
+          WHICH_TOOLKIT="$(command -v toolkit || true)"
+          if [ -n "$WHICH_TOOLKIT" ]; then
+            printf 'Toolkit on PATH: %s\n' "$WHICH_TOOLKIT"
+          else
+            echo "Toolkit not found on PATH (unexpected)"; exit 1
+          fi
+          toolkit --version || true
+
+      - name: Provision (plan only)
+        run: toolkit provision apply --plan --conf authToken="$TOOLKIT_TOKEN"
+
+      - name: Install SnowSQL CLI
+        uses: snowflakedb/snowflake-cli-action@v2.0
+        
+
+      - name: Snowflake connectivity smoke test (no changes)
+        shell: bash
+        env:
+          SNOWFLAKE_USER:      ${{ env.SNOWFLAKE_USER }}
+          SNOWFLAKE_ACCOUNT:   ${{ env.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD:  ${{ env.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE:      ${{ env.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ env.SNOWFLAKE_WAREHOUSE }}
+        run: |
+          set -euo pipefail
+          snow sql -x -q "select current_account(), current_role(), current_warehouse();"
+
+      - name: Dry-run SQL compile check
+        shell: bash
+        env:
+          SNOWFLAKE_USER:      ${{ env.SNOWFLAKE_USER }}
+          SNOWFLAKE_ACCOUNT:   ${{ env.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD:  ${{ env.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE:      ${{ env.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ env.SNOWFLAKE_WAREHOUSE }}
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -E '^sql_files/.*\.sql$' || true)"
+
+          if [ -z "$CHANGED" ]; then
+            echo "No SQL files changed."
+            exit 0
+          fi
+
+          echo "Checking changed SQL files:"
+          echo "$CHANGED"
+
+          while IFS= read -r f; do
+            tmp="$(mktemp)"
+            sed -E '/^[[:space:]]*!/d' "$f" > "$tmp"
+            echo " Compile check: $f"
+            # Wrap in a txn so nothing persists if a file accidentally contains DDL
+            snow sql -x -f "$tmp" --variable ENV="${ENV}" --wrap-queries "BEGIN; $$; ROLLBACK;"
+            rm -f "$tmp"
+          done <<< "$CHANGED"
+
+
+      - name: List changed SQL files (informational)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -E '^sql_files/.*\.sql$' || echo "No SQL changes."
+
+
+
