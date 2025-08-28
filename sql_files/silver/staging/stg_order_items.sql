@@ -32,7 +32,7 @@ ALTER TABLE ORDER_ITEMS MODIFY COLUMN ORDER_ID COMMENT 'It stores the unique ord
 ALTER TABLE ORDER_ITEMS MODIFY COLUMN CUSTOMER_ID COMMENT 'It stores the unique customer ID';
 ALTER TABLE ORDER_ITEMS MODIFY COLUMN PRODUCT_ID COMMENT 'It stores the unique product ID';
 ALTER TABLE ORDER_ITEMS MODIFY COLUMN INVENTORY_ITEM_ID COMMENT 'It stores the unique inventory item ID';
-ALTER TABLE ORDER_ITEMS MODIFY COLUMN STATUS COMMENT 'It stores the status of the order item';
+ALTER TABLE ORDER_ITEMS MODIFY COLUMN STATUS COMMENT 'It stores the status of the ordered item';
 ALTER TABLE ORDER_ITEMS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time when the order item was created';
 ALTER TABLE ORDER_ITEMS MODIFY COLUMN SHIPPED_AT COMMENT 'It stores the date and time when the order item was shipped';
 ALTER TABLE ORDER_ITEMS MODIFY COLUMN DELIVERED_AT COMMENT 'It stores the date and time when the order item was delivered';

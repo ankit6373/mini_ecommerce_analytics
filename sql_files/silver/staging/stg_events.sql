@@ -25,7 +25,7 @@ FROM &{ENV}_BRONZE.RAW.EVENTS;
 ALTER TABLE EVENTS ADD CONSTRAINT PK_EVENTS PRIMARY KEY(EVENT_ID);
 
 -- Add a desription for the entire table
-ALTER TABLE EVENTS SET COMMENT = 'This table stores information about the events like browsing through the website.';
+ALTER TABLE EVENTS SET COMMENT = 'This table stores information about the events like browsing through the website/app.';
 
 -- Add comments to each column
 ALTER TABLE EVENTS MODIFY COLUMN EVENT_ID COMMENT 'It stores the unique event ID';
