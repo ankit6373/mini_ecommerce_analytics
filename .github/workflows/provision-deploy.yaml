@@ -110,8 +110,15 @@ jobs:
 
           printf 'Changed SQL files:\n%s\n' "$CHANGED"
 
-          # Execute each file with a temporary connection (-x) and ENV variable
+          # For each SQL file: create a temp copy without SnowSQL meta-commands (lines starting with '!')
           while IFS= read -r f; do
-            printf '▶ snow sql -x -f %s --variable ENV=%s\n' "$f" "${ENV}"
-            snow sql -x -f "$f" --variable ENV="${ENV}"
-          done <<< "$CHANGED"
+            echo "▶ Preparing $f"
+            tmp="$(mktemp)"
+            # strip SnowSQL client directives like: !set, !echo, !source, etc.
+            # (remove any line beginning with optional spaces then '!')
+            sed -E '/^[[:space:]]*!/d' "$f" > "$tmp"
+
+            echo "▶ snow sql -x -f $f (preprocessed) --variable ENV=${ENV}"
+            snow sql -x -f "$tmp" --variable ENV="${ENV}"
+            rm -f "$tmp"
+            done <<< "$CHANGED"
