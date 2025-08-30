@@ -5,7 +5,7 @@ USE DATABASE &{ENV}_SILVER;
 USE SCHEMA COMMON;
 
 CREATE OR REPLACE TABLE DIM_CUSTOMER (
-  CUSTOMER_ID        NUMBER        PRIMARY KEY COMMENT 'It stores business key STAGING.CUSTOMERS',
+  CUSTOMER_ID        NUMBER        PRIMARY KEY COMMENT 'It stores business key from STAGING.CUSTOMERS',
   FIRST_NAME         STRING        COMMENT 'It stores First name of customer',
   LAST_NAME          STRING        COMMENT 'It stores Last name of customer',
   EMAIL              STRING        COMMENT 'It stores email of customer',
@@ -20,7 +20,7 @@ CREATE OR REPLACE TABLE DIM_CUSTOMER (
   TRAFFIC_SOURCE     STRING        COMMENT 'It stores original acquisition source',
   CREATED_AT         TIMESTAMP_NTZ COMMENT 'It stores when customer was created in the source'
 )
-COMMENT = ' it stores all the customer attributes here providing a single source of truth for customer data';
+COMMENT = 'It stores all the customer attributes here providing a single source of truth for customer data';
 
 INSERT INTO DIM_CUSTOMER
 SELECT
