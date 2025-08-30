@@ -28,7 +28,7 @@ ALTER TABLE INVENTORY_ITEMS SET COMMENT = 'This table stores information about t
 -- Add comments to each column
 ALTER TABLE INVENTORY_ITEMS MODIFY COLUMN INVENTORY_ITEM_ID COMMENT 'It stores the unique inventory item ID';
 ALTER TABLE INVENTORY_ITEMS MODIFY COLUMN PRODUCT_ID COMMENT 'It stores the unique product ID';
-ALTER TABLE INVENTORY_ITEMS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time when the item was created';
+ALTER TABLE INVENTORY_ITEMS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time when the item was created in the system';
 ALTER TABLE INVENTORY_ITEMS MODIFY COLUMN SOLD_AT COMMENT 'It stores the date and time when the item was sold';
 ALTER TABLE INVENTORY_ITEMS MODIFY COLUMN COST COMMENT 'It stores the cost of the item';
 ALTER TABLE INVENTORY_ITEMS MODIFY COLUMN PRODUCT_CATEGORY COMMENT 'It stores the category of the product';

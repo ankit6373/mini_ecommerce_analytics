@@ -22,12 +22,12 @@ FROM &{ENV}_BRONZE.RAW.ORDERS;
 ALTER TABLE ORDERS ADD CONSTRAINT PK_ORDERS PRIMARY KEY(ORDER_ID);
 
 -- Add a desription for the entire table
-ALTER TABLE ORDERS SET COMMENT = 'This table stores information about the orders including their status and customer details';
+ALTER TABLE ORDERS SET COMMENT = 'This table stores information about orders including their status and customer details';
 
 -- Add comments to each column
 ALTER TABLE ORDERS MODIFY COLUMN ORDER_ID COMMENT 'It stores unique order ID';
 ALTER TABLE ORDERS MODIFY COLUMN CUSTOMER_ID COMMENT 'It stores unique customer ID';
-ALTER TABLE ORDERS MODIFY COLUMN STATUS COMMENT 'It stores the status of the order';
+ALTER TABLE ORDERS MODIFY COLUMN STATUS COMMENT 'It stores the status of the ordered item';
 ALTER TABLE ORDERS MODIFY COLUMN GENDER COMMENT 'It stores the gender of the customer';
 ALTER TABLE ORDERS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time when the order was created';
 ALTER TABLE ORDERS MODIFY COLUMN SHIPPED_AT COMMENT 'It stores the date and time when the order was shipped';

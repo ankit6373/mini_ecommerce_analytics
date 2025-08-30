@@ -17,7 +17,7 @@ FROM &{ENV}_BRONZE.RAW.DISTRIBUTION_CENTERS;
 ALTER TABLE DISTRIBUTION_CENTERS ADD CONSTRAINT PK_DISTRIBUTION_CENTERS PRIMARY KEY(DC_ID);
 
 -- Add a desription for the entire table
-ALTER TABLE DISTRIBUTION_CENTERS SET COMMENT = 'This table stores information about the Distribution centers.';
+ALTER TABLE DISTRIBUTION_CENTERS SET COMMENT = 'This table stores information about the Distribution centers in the system.';
 
 -- Add comments to each column
 ALTER TABLE DISTRIBUTION_CENTERS MODIFY COLUMN DC_ID COMMENT 'It stores distribution center ID';
