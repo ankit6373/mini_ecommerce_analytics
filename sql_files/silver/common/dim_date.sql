@@ -26,7 +26,7 @@ CREATE OR REPLACE TABLE DIM_DATE (
 )
 COMMENT = 'It is a calender loopup table. It stores one row per calender date';
 
--- CHOOSE RANGE (EDIT THESE TWO LINES IF NEEDED)
+-- CHOOSE RANGE (We can edit this range later according to business needs)
 SET START_DATE = TO_DATE('2015-01-01');
 SET END_DATE   = TO_DATE('2035-12-31');
 
