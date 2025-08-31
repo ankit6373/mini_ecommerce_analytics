@@ -5,14 +5,14 @@ USE DATABASE &{ENV}_SILVER;
 USE SCHEMA COMMON;
 
 CREATE OR REPLACE TABLE DIM_PRODUCT (
-  PRODUCT_ID             NUMBER        PRIMARY KEY COMMENT 'BUSINESS KEY FROM STAGING.PRODUCTS',
-  NAME                   STRING        COMMENT 'PRODUCT NAME',
-  BRAND                  STRING        COMMENT 'PRODUCT BRAND',
-  CATEGORY               STRING        COMMENT 'PRODUCT CATEGORY',
-  DEPARTMENT             STRING        COMMENT 'PRODUCT DEPARTMENT',
-  SKU                    STRING        COMMENT 'PRODUCT SKU',
-  RETAIL_PRICE           NUMBER(18,2)  COMMENT 'STANDARD RETAIL PRICE',
-  COST                   NUMBER(18,2)  COMMENT 'STANDARD UNIT COST',
+  PRODUCT_ID             NUMBER        PRIMARY KEY COMMENT 'Business key from STAGING.PRODUCTS',
+  NAME                   STRING        COMMENT 'It stores product name',
+  BRAND                  STRING        COMMENT 'It stores product brand',
+  CATEGORY               STRING        COMMENT 'It stores product category',
+  DEPARTMENT             STRING        COMMENT 'It stores product department',
+  SKU                    STRING        COMMENT 'It stores product SKU',
+  RETAIL_PRICE           NUMBER(18,2)  COMMENT 'It stores standard retail price',
+  COST                   NUMBER(18,2)  COMMENT 'It stores standard unit cost',
   DISTRIBUTION_CENTER_ID NUMBER        COMMENT 'FK TO DIM_DISTRIBUTION_CENTER'
 )
 COMMENT = 'PRODUCT DIMENSION (ONE ROW PER PRODUCT, ATTRIBUTES FOR ANALYTICS)';
