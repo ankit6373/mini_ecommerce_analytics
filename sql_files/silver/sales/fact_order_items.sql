@@ -22,7 +22,7 @@ CREATE OR REPLACE TABLE FACT_ORDER_ITEMS (
   UNIT_COST_AT_SALE      NUMBER(18,2)  COMMENT 'It stores cost captured from inventory item (If available)',
   GROSS_MARGIN           NUMBER(18,2)  COMMENT 'SALES_PRICE - UNIT_COST_AT_SALE'
 )
-COMMENT='Core sales FACT at LINE-ITEM GRAIN, If an order has 3 different products, it will have 3 different rows in this table';
+COMMENT='Core sales FACT at LINE-ITEM grain, If an order has 3 different products, it will have 3 different rows in this table';
 
 INSERT INTO FACT_ORDER_ITEMS (
   ORDER_ITEM_ID, ORDER_ID, CUSTOMER_ID, PRODUCT_ID, INVENTORY_ITEM_ID, DC_ID,
