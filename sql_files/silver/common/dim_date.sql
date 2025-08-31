@@ -39,7 +39,7 @@ WITH SEQ AS (
 SELECT
   TO_NUMBER(TO_CHAR(D, 'YYYYMMDD'))                          AS DATE_ID,
   D                                                          AS FULL_DATE,
-  DAYOFWEEKISO(D)                                            AS DAY_OF_WEEK_ISO,     -- 1..7
+  DAYOFWEEKISO(D)                                            AS DAY_OF_WEEK_ISO,     --1..7
   TO_CHAR(D, 'DY')                                           AS DAY_NAME,
   DATE_PART('WEEKISO', D)                                    AS WEEK_OF_YEAR_ISO,
   MONTH(D)                                                   AS MONTH_NUM,
