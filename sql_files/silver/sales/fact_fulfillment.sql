@@ -19,7 +19,7 @@ CREATE OR REPLACE TABLE FACT_FULFILLMENT (
   QF_DELIVER_BEFORE_SHIP   NUMBER        COMMENT '1 IF DELIVERED_AT < SHIPPED_AT',
   QF_DELIVER_BEFORE_CREATE NUMBER        COMMENT '1 IF DELIVERED_AT < CREATED_AT'
 )
-COMMENT='It stores information about Fullflment / Shipping Performance of the orders';
+COMMENT='It stores information about Fulfillment/ Shipping Performance of the orders';
 
 INSERT INTO FACT_FULFILLMENT (
   ORDER_ID, CUSTOMER_ID,
