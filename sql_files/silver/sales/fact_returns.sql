@@ -14,7 +14,7 @@ CREATE OR REPLACE TABLE FACT_RETURNS (
   REFUND_AMOUNT        NUMBER(18,2)  COMMENT 'Assume Full Price Refunded (Adjust if policy differs)',
   DAYS_TO_RETURN       NUMBER        COMMENT 'DATEDIFF DELIVERED_AT→RETURNED_AT'
 )
-COMMENT='It stores information about retuened orders';
+COMMENT='It stores information about returned orders';
 
 INSERT INTO FACT_RETURNS (
   ORDER_ITEM_ID, ORDER_ID, CUSTOMER_ID, PRODUCT_ID,
