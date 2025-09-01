@@ -34,7 +34,7 @@ FULL OUTER JOIN RETURNS_D R
 -- if a date exists in both then they are matched
 -- this way every relevant date showes up in this table
 
-
+-- COMMENTS: FACT_REVENUE_DAILY
 ALTER TABLE FACT_REVENUE_DAILY SET COMMENT = 'It stores daily revenue rollup: gross sales by order date, refunds by return date, and net revenue.';
 
 ALTER TABLE FACT_REVENUE_DAILY MODIFY COLUMN DATE_ID COMMENT 'YYYYMMDD date key for daily aggregation (join to DIM_DATE / DIM_FISCAL_CALENDAR)';
