@@ -33,6 +33,6 @@ ALTER TABLE ORDERS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time
 ALTER TABLE ORDERS MODIFY COLUMN SHIPPED_AT COMMENT 'It stores the date and time when the order was shipped';
 ALTER TABLE ORDERS MODIFY COLUMN DELIVERED_AT COMMENT 'It stores the date and time when the order was delivered';
 ALTER TABLE ORDERS MODIFY COLUMN RETURNED_AT COMMENT 'It stores the date and time when the order was returned';
-ALTER TABLE ORDERS MODIFY COLUMN NUM_OF_ITEM COMMENT 'It stores the number of items in the order';
+ALTER TABLE ORDERS MODIFY COLUMN NUM_OF_ITEM COMMENT 'It stores the number of items in the order ';
 
 

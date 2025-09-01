@@ -39,5 +39,5 @@ ALTER TABLE EVENTS MODIFY COLUMN STATE COMMENT 'It stores the state of the event
 ALTER TABLE EVENTS MODIFY COLUMN POSTAL_CODE COMMENT 'It stores the postal code of the event';
 ALTER TABLE EVENTS MODIFY COLUMN BROWSER COMMENT 'It stores the browser used for the event';
 ALTER TABLE EVENTS MODIFY COLUMN TRAFFIC_SOURCE COMMENT 'It stores the traffic source of the event';
-ALTER TABLE EVENTS MODIFY COLUMN URI COMMENT 'It stores the URI of the event';
+ALTER TABLE EVENTS MODIFY COLUMN URI COMMENT 'It stores the uri of the event';
 ALTER TABLE EVENTS MODIFY COLUMN EVENT_TYPE COMMENT 'It stores the type of the event';
