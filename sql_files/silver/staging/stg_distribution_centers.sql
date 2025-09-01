@@ -21,6 +21,6 @@ ALTER TABLE DISTRIBUTION_CENTERS SET COMMENT = 'This table stores information ab
 
 -- Add comments to each column
 ALTER TABLE DISTRIBUTION_CENTERS MODIFY COLUMN DC_ID COMMENT 'It stores distribution center ID';
-ALTER TABLE DISTRIBUTION_CENTERS MODIFY COLUMN NAME COMMENT 'It stores name of distribution center';
+ALTER TABLE DISTRIBUTION_CENTERS MODIFY COLUMN NAME COMMENT 'It stores name of the distribution center';
 ALTER TABLE DISTRIBUTION_CENTERS MODIFY COLUMN LATITUDE COMMENT 'It stores Latitude of distribution center';
 ALTER TABLE DISTRIBUTION_CENTERS MODIFY COLUMN LONGITUDE COMMENT 'It stores Longitude of distribution center';
