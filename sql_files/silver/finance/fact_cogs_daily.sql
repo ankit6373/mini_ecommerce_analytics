@@ -13,7 +13,7 @@ WITH COGS_D AS (
   GROUP BY ORDER_DATE_ID
 ),
 COGS_REVERSAL_D AS (
-  -- assume the unit cost at sale approximates the cost to reverse on return
+  -- assuming the unit cost at sale approximates the cost to reverse on return
   SELECT
     R.RETURN_DATE_ID AS DATE_ID,
     SUM(COALESCE(I.UNIT_COST_AT_SALE, 0) * COALESCE(I.QUANTITY, 1)) AS COGS_RETURN_REVERSAL

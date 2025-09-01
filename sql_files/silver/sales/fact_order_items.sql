@@ -43,8 +43,8 @@ SELECT
   OI.STATUS,
   1                                                                     AS QUANTITY,
   OI.SALES_PRICE,
-  COALESCE(II.COST, P.COST)                                             AS UNIT_COST_AT_SALE,
-  OI.SALES_PRICE - COALESCE(II.COST, P.COST)                            AS GROSS_MARGIN
+  COALESCE(P.COST,II.COST)                                             AS UNIT_COST_AT_SALE,
+  OI.SALES_PRICE - COALESCE(P.COST,II.COST)                            AS GROSS_MARGIN
 FROM &{ENV}_SILVER.STAGING.ORDER_ITEMS OI
 LEFT JOIN &{ENV}_SILVER.STAGING.INVENTORY_ITEMS II
   ON OI.INVENTORY_ITEM_ID = II.INVENTORY_ITEM_ID
