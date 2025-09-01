@@ -8,7 +8,7 @@ USE SCHEMA COMMON;
 -- CREATE TABLE (REPLACE IF EXISTS)
 CREATE OR REPLACE TABLE DIM_DATE (
   DATE_ID            NUMBER        PRIMARY KEY COMMENT 'YYYYMMDD SURROGATE KEY',
-  FULL_DATE          DATE          COMMENT 'It stores full Calender date',
+  FULL_DATE          DATE          COMMENT 'It stores full calender date',
   DAY_OF_WEEK_ISO    NUMBER        COMMENT '1=MON ... 7=SUN (ISO)',
   DAY_NAME           STRING        COMMENT 'it stores the name of the day',
   WEEK_OF_YEAR_ISO   NUMBER        COMMENT 'ISO WEEK NUMBER (1-53)',
