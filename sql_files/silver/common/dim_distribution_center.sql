@@ -9,7 +9,7 @@ CREATE OR REPLACE TABLE DIM_DISTRIBUTION_CENTER (
   NAME           STRING        COMMENT 'It stores name of Distribution center',
   LATITUDE       FLOAT         COMMENT 'It stores latitude of Distribution center',
   LONGITUDE      FLOAT         COMMENT 'It stores longitude of Distribution center',
-  GEO_ID         NUMBER        COMMENT 'FK TO DIM_GEOGRAPHY (OPTIONAL LINKAGE)'
+  GEO_ID         NUMBER        COMMENT 'FK TO DIM_GEOGRAPHY (optional linkage to geography dimension if available)'
 )
 COMMENT = 'It stores Distribution center dimension (LOGISTICS ENTITIES)';
 

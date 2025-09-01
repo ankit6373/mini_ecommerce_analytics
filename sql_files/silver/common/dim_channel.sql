@@ -8,7 +8,7 @@ USE SCHEMA COMMON;
 CREATE OR REPLACE TABLE DIM_CHANNEL (
   CHANNEL_ID       NUMBER AUTOINCREMENT PRIMARY KEY COMMENT 'It stores surrogate key for channel',
   RAW_SOURCE       STRING COMMENT 'It stores raw traffic source from staging',
-  CHANNEL_GROUP    STRING COMMENT 'It stores normalized channel group (PAID, ORGANIC, EMAIL, SOCIAL, DIRECT, OTHER)'
+  CHANNEL_GROUP    STRING COMMENT 'It stores normalized channel group (PAID, ORGANIC, EMAIL, SOCIAL, OTHER)'
 )
 COMMENT = 'It stores one row per traffic/acquisition source';
 

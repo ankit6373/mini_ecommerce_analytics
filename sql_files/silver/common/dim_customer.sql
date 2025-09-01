@@ -20,7 +20,7 @@ CREATE OR REPLACE TABLE DIM_CUSTOMER (
   TRAFFIC_SOURCE     STRING        COMMENT 'It stores original acquisition source',
   CREATED_AT         TIMESTAMP_NTZ COMMENT 'It stores when customer was created in the source'
 )
-COMMENT = 'It stores all the customer attributes here providing a single source of truth for customer data';
+COMMENT = 'It stores all the customer attributes providing a single source of truth for customer data';
 
 INSERT INTO DIM_CUSTOMER
 SELECT

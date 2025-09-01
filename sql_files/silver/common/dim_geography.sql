@@ -13,7 +13,7 @@ CREATE OR REPLACE TABLE DIM_GEOGRAPHY (
   LATITUDE     FLOAT  COMMENT 'It stores the latitude',
   LONGITUDE    FLOAT  COMMENT 'It stores the longitude'
 )
-COMMENT = 'It stores central geography lookup for customers, events, distribution centers';
+COMMENT = 'It stores central geography lookup for customers, events, distribution centers ';
 
 -- LOADING UNIQUE COMBOS FROM CUSTOMERS + EVENTS + DISTRIBUTION CENTERS
 INSERT INTO DIM_GEOGRAPHY (COUNTRY, STATE, CITY, POSTAL_CODE, LATITUDE, LONGITUDE)

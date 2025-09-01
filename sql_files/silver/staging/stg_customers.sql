@@ -40,7 +40,7 @@ ALTER TABLE CUSTOMERS MODIFY COLUMN CITY COMMENT 'It stores the city of the cust
 ALTER TABLE CUSTOMERS MODIFY COLUMN STATE COMMENT 'It stores the state of the customer';
 ALTER TABLE CUSTOMERS MODIFY COLUMN POSTAL_CODE COMMENT 'It stores the postal code of the location of customer';
 ALTER TABLE CUSTOMERS MODIFY COLUMN COUNTRY COMMENT 'It stores the country of the customer';
-ALTER TABLE CUSTOMERS MODIFY COLUMN LATITUDE COMMENT 'It stores the latitude of the customer''s location';
+ALTER TABLE CUSTOMERS MODIFY COLUMN LATITUDE COMMENT 'It stores the  latitude of the customer''s location';
 ALTER TABLE CUSTOMERS MODIFY COLUMN LONGITUDE COMMENT 'It stores the longitude of the customer''s location';
 ALTER TABLE CUSTOMERS MODIFY COLUMN TRAFFIC_SOURCE COMMENT 'It stores the source of the customer''s traffic';
 ALTER TABLE CUSTOMERS MODIFY COLUMN CREATED_AT COMMENT 'It stores the date and time when the customer was created';
