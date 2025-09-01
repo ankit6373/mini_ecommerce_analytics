@@ -34,7 +34,7 @@ GROUP BY
 -- Added Table comment
 ALTER VIEW VW_SALES_BY_PRODUCT_DAILY SET COMMENT = 'Daily product-level sales view: units, gross revenue, estimated COGS, gross margin, and average selling price.';
 
--- Added Column comment
+-- Added Column comments
 ALTER VIEW VW_SALES_BY_PRODUCT_DAILY MODIFY COLUMN DATE_ID          COMMENT 'YYYYMMDD order date key';
 ALTER VIEW VW_SALES_BY_PRODUCT_DAILY MODIFY COLUMN FULL_DATE        COMMENT 'Calendar date';
 ALTER VIEW VW_SALES_BY_PRODUCT_DAILY MODIFY COLUMN PRODUCT_ID       COMMENT 'Product business key';
