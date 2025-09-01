@@ -49,6 +49,7 @@ LEFT JOIN F ON F.DATE_ID = COALESCE(R.DATE_ID, C.DATE_ID);
 
 -- - Join to both calendar and fiscal dims so consumers can slice either way.
 -- - GROSS_MARGIN uses gross values; NET_GROSS_MARGIN uses net values (after refunds/return reversals).
+
 !set variable_substitution=false;
 
 ALTER VIEW VW_PNL_DAILY SET COMMENT = 'Daily Profit & Loss (PnL) style view: combines revenue and COGS with both calendar and fiscal time labels.';
