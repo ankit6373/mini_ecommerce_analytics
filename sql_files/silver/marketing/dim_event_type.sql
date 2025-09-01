@@ -7,7 +7,7 @@ USE SCHEMA MARKETING;
 CREATE OR REPLACE TABLE DIM_EVENT_TYPE (
   EVENT_TYPE_ID   NUMBER AUTOINCREMENT PRIMARY KEY COMMENT 'Surrogate key of the event',
   EVENT_TYPE_NAME STRING NOT NULL COMMENT 'It stores RAW/CONFORMED event type name',
-  DESCRIPTION     STRING COMMENT 'Optional Freeform Description'
+  DESCRIPTION     STRING COMMENT 'Optional Freeform Description of the event type, now NULL by default'
 )
 COMMENT='It stores list of distinct event types that happens in the system';
 
