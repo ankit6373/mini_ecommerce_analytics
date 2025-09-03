@@ -25,17 +25,4 @@ schemas:
     database: PLATFORM
 
 
-#roles: 
-#  - DEV_PHDATA
-#users:
-#  - name: DEMO_USER
-#  - name: ANALYTICS_USER
-#warehouses:
-#  - name: ANALYTICS_WH
-#roleGrants:
-#  - name: SYSADMIN
-#  - name: SECURITYADMIN
-#    ToRoles: DEV_PHDATA
-
-
   
