@@ -2,7 +2,7 @@ name: Provision Plan
 
 on:
   pull_request:
-    branches: [ qa, main ]
+    branches: [ dev, qa, main ]
     types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
@@ -23,13 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     env:
-      ENV: ${{ github.base_ref == 'qa' && 'QA' || 'PROD' }}
+      ENV: ${{ github.base_ref == 'dev' && 'DEV' || github.base_ref == 'qa' && 'QA' || 'PROD' }}
       SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-      SNOWFLAKE_USER:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
-      SNOWFLAKE_PASSWORD:  ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
-      SNOWFLAKE_ROLE:      ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
-      SNOWSQL_PWD:         ${{ github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
+      SNOWFLAKE_USER:      ${{ github.base_ref == 'dev' && secrets.SNOWFLAKE_USER_DEV  || github.base_ref == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
+      SNOWFLAKE_PASSWORD:  ${{ github.base_ref == 'dev' && secrets.SNOWFLAKE_PASSWORD_DEV || github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
+      SNOWFLAKE_ROLE:      ${{ github.base_ref == 'dev' && secrets.SNOWFLAKE_ROLE_DEV  || github.base_ref == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
+      SNOWSQL_PWD:         ${{ github.base_ref == 'dev' && secrets.SNOWFLAKE_PASSWORD_DEV || github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
       SNOWFLAKE_AUTHENTICATOR: "snowflake"
       TOOLKIT_AUTH_TOKEN: ${{ secrets.TOOLKIT_TOKEN }}
 
