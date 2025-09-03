@@ -1,12 +1,14 @@
-# Snowflake + phData Toolkit (QA → PROD)
+# Snowflake + phData Toolkit (DEV → QA → PROD)
 
 This repo provisions Snowflake with phData Toolkit and promotes SQL via GitHub Actions.
 
 ## Branches & Flow
-- `feature/*` → PR into `qa`
-- `qa` → staging env (QA)
-- `main` → production env (PROD)
-- Best practice: After every release (qa → main), open a quick sync PR main → qa.
+
+
+- ## feature/ → PR into dev
+- ## dev** → PR into qa
+- ## qa** → PR into main** (production)
+
 
 ## Workflows
 - ## Provision Plan** (`.github/workflows/provision-plan.yaml`)  
@@ -18,13 +20,16 @@ This repo provisions Snowflake with phData Toolkit and promotes SQL via GitHub A
   - Required check: Snowflake Plan.
 
 - ## Provision Deploy** (`.github/workflows/provision-deploy.yaml`)  
-  Trigger: push to `qa` or `main` when paths under `provision/`, `sql_files/`, etc. change.  
-  Does:
-  - Applies Toolkit changes (QA if branch=qa, PROD if branch=main).
-  - Executes** only changed `sql_files/*.sql`.
+  Trigger:** Pull requests targeting dev, qa, or main**
+  **Does:**
+- Lints workflow YAMLs (`actionlint`)
+- Runs **Toolkit plan** (no changes)
+- Compiles only changed `sql_files/*.sql` inside a rollbacked transaction (syntax safety)
+- Required status check: **Snowflake Plan**
 
 ## Secrets (GitHub → Settings → Secrets)
 - Common: `TOOLKIT_TOKEN`, `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_WAREHOUSE`
+- DEV: `SNOWFLAKE_USER_DEV`, `SNOWFLAKE_PASSWORD_DEV`, `SNOWFLAKE_ROLE_DEV`
 - QA: `SNOWFLAKE_USER_QA`, `SNOWFLAKE_PASSWORD_QA`, `SNOWFLAKE_ROLE_QA`
 - PROD: `SNOWFLAKE_USER_PROD`, `SNOWFLAKE_PASSWORD_PROD`, `SNOWFLAKE_ROLE_PROD`
 

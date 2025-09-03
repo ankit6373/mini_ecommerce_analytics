@@ -36,6 +36,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      #  guard to prevent SBX_* schemas from leaking into PRs
+      - name: Guard – fail if sandbox schema leaked into PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -E '^sql_files/.*\.sql$' || true)"
+
+          if [ -z "$CHANGED" ]; then
+            echo "No SQL changes in PR. Skipping sandbox guard."
+            exit 0
+          fi
+
+          echo "Scanning changed SQL for SBX_* references..."
+          # Match either `USE SCHEMA SBX_*` or fully-qualified refs like DEV_*.SBX_*.
+          if echo "$CHANGED" | xargs -r grep -RInE '(USE[[:space:]]+SCHEMA[[:space:]]+SBX_[A-Z0-9_]+|DEV_(BRONZE|SILVER|GOLD)\.SBX_[A-Z0-9_]+)'; then
+            echo "Found sandbox schema references (SBX_*). Switch to FINANCE/ANALYTICS/etc. before PR."
+            exit 1
+          fi
+          echo "No sandbox references found."
+
       - name: Set up Java 17 (Toolkit requires Java)
         uses: actions/setup-java@v4
         with:
