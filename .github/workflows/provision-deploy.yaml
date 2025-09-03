@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     env:
-      ENV: ${{ github.ref_name == 'dev' && 'DEV' || github.ref_name == 'qa' && 'QA' || github.ref_name == 'main' && 'PROD' || 'DEV' }}
+      ENV: ${{ github.ref_name == 'dev' && 'DEV' || github.ref_name == 'qa' && 'QA' || github.ref_name == 'main' && 'PROD'}}
       SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
       SNOWFLAKE_USER:      ${{ github.ref_name == 'dev' && secrets.SNOWFLAKE_USER_DEV  || github.ref_name == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
