@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     env:
-      ENV: ${{ github.base_ref == 'dev' && 'DEV' || github.ref_name == 'qa' && 'QA' || 'PROD' }}
+      ENV: ${{ github.ref_name == 'dev' && 'DEV' || github.ref_name == 'qa' && 'QA' || github.ref_name == 'main' && 'PROD' || 'DEV' }}
       SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
       SNOWFLAKE_USER:      ${{ github.ref_name == 'dev' && secrets.SNOWFLAKE_USER_DEV  || github.ref_name == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
@@ -112,13 +112,13 @@ jobs:
 
           # For each SQL file: create a temp copy without SnowSQL meta-commands (lines starting with '!')
           while IFS= read -r f; do
-            echo "▶ Preparing $f"
+            echo "Preparing $f"
             tmp="$(mktemp)"
             # strip SnowSQL client directives like: !set, !echo, !source, etc.
             # (remove any line beginning with optional spaces then '!')
             sed -E '/^[[:space:]]*!/d' "$f" > "$tmp"
 
-            echo "▶ snow sql -x -f $f (preprocessed) --variable ENV=${ENV}"
+            echo "snow sql -x -f $f (preprocessed) --variable ENV=${ENV}"
             snow sql -x -f "$tmp" --variable ENV="${ENV}"
             rm -f "$tmp"
             done <<< "$CHANGED"
