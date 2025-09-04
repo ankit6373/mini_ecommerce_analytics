@@ -28,7 +28,7 @@ This repo provisions Snowflake with phData Toolkit and promotes SQL via GitHub A
 - Required status check: **Snowflake Plan**
 
 ## Secrets (GitHub → Settings → Secrets)
-- Common: `TOOLKIT_TOKEN`, `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_WAREHOUSE`
+- Common: `TOOLKIT_TOKEN`, `SNOWFLAKE_ACCOUNT`
 - DEV: `SNOWFLAKE_USER_DEV`, `SNOWFLAKE_PASSWORD_DEV`, `SNOWFLAKE_ROLE_DEV`
 - QA: `SNOWFLAKE_USER_QA`, `SNOWFLAKE_PASSWORD_QA`, `SNOWFLAKE_ROLE_QA`
 - PROD: `SNOWFLAKE_USER_PROD`, `SNOWFLAKE_PASSWORD_PROD`, `SNOWFLAKE_ROLE_PROD`
