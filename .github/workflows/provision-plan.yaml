@@ -25,7 +25,7 @@ jobs:
     env:
       ENV: ${{ github.base_ref == 'dev' && 'DEV' || github.base_ref == 'qa' && 'QA' || 'PROD' }}
       SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWFLAKE_ACCOUNT }}
-      SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+      SNOWFLAKE_WAREHOUSE: ${{ github.base_ref == 'dev' && 'ANALYTICS_WH' || github.base_ref == 'qa' && 'ANALYTICS_WH_QA' || 'ANALYTICS_WH_PROD' }}
       SNOWFLAKE_USER:      ${{ github.base_ref == 'dev' && secrets.SNOWFLAKE_USER_DEV  || github.base_ref == 'qa' && secrets.SNOWFLAKE_USER_QA   || secrets.SNOWFLAKE_USER_PROD }}
       SNOWFLAKE_PASSWORD:  ${{ github.base_ref == 'dev' && secrets.SNOWFLAKE_PASSWORD_DEV || github.base_ref == 'qa' && secrets.SNOWFLAKE_PASSWORD_QA || secrets.SNOWFLAKE_PASSWORD_PROD }}
       SNOWFLAKE_ROLE:      ${{ github.base_ref == 'dev' && secrets.SNOWFLAKE_ROLE_DEV  || github.base_ref == 'qa' && secrets.SNOWFLAKE_ROLE_QA   || secrets.SNOWFLAKE_ROLE_PROD }}
